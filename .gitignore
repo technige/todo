@@ -1,0 +1,8 @@
+.vscode
+
+# .NET
+dotnet/[Bb]in
+dotnet/[Oo]bj
+
+# Java
+java/.gradle
