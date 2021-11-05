@@ -180,9 +180,7 @@ class ToDo
         // index for deletion.
         //
         var response = await Client.DeleteByQueryAsync<Item>(s => s
-            .Query(q => q                           // our search is based on a query that
-                .QueryString(qs => qs.Query("*"))   // matches the query string "*" (meaning "all")
-            )
+            .QueryOnQueryString("*")            // match all documents using the query string "*"
         );
         return response.IsValid ? 0 : 1;
     }
