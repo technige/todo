@@ -76,24 +76,31 @@ class ToDo
                 return 1;
 
         }
-
         return task.GetAwaiter().GetResult();
     }
 
     ToDo()
     {
         // Create settings for a connection to Elasticsearch.
-        // Here, we set up a mapping between the Item class and
-        // the "todo" index, such that all usage of that class
-        // is channelled into that index.
+        //
+        // As the server is not explicitly specified, we are
+        // expecting an instance to be running on localhost over
+        // the default port, 9200.
+        // 
+        // We also explicitly set up a mapping between the Item
+        // class and the "todo" index, such that all usage of
+        // that class is channelled into that index.
         //
         // For more details on connection settings, see:
         //   https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/configuration-options.html#_connectionsettings_with_elasticclient
+        //
         var settings = new ConnectionSettings()
             .DefaultMappingFor<Item>(m => m.IndexName("todo"));
+
         // Create a client instance using the settings above.
         // This acts a a wrapper for all API calls, and will
         // be safely garbage collected when it goes out of scope.
+        //
         Client = new ElasticClient(settings);
         
     }
@@ -111,14 +118,17 @@ class ToDo
         // our search result, and also that we should use the
         // "todo" index, as specified in the ConnectionSettings
         // mapping, above.
+        //
         var response = await Client.SearchAsync<Item>(s => s
             .Query(q => q                       // our search is based on a query that
                 .Term(f => f.Text, term)        // matches "term" to the "text" field
             )
         );
+
         // Loop through and output all documents in the response.
         // As specified in the SearchAsync call, each of these will
         // be an Item instance.
+        //
         foreach (Item doc in response.Documents) {
             Console.WriteLine(doc);
         }
@@ -132,6 +142,7 @@ class ToDo
     {
         // The IndexDocumentAsync method takes the Item instance
         // and passes it into the database for creation.
+        //
         var response = await Client.IndexDocumentAsync(new Item(text));
         return response.IsValid ? 0 : 1;
     }
@@ -149,6 +160,7 @@ class ToDo
         // Further details of the "Painless" scripting languages
         // can be found here:
         //   https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-painless.html
+        //
         var response = await Client.UpdateByQueryAsync<Item>(s => s
             .Query(q => q                       // our search is based on a query that
                 .Term(f => f.Text, term)        // matches "term" to the "text" field
@@ -166,6 +178,7 @@ class ToDo
         // The DeleteByQueryAsync method is similar to its "Update"
         // sibling (above) in that we can select documents from the
         // index for deletion.
+        //
         var response = await Client.DeleteByQueryAsync<Item>(s => s
             .Query(q => q                           // our search is based on a query that
                 .QueryString(qs => qs.Query("*"))   // matches the query string "*" (meaning "all")
