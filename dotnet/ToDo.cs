@@ -143,7 +143,8 @@ class ToDo
         // The IndexDocumentAsync method takes the Item instance
         // and passes it into the database for creation.
         //
-        var response = await Client.IndexDocumentAsync(new Item(text));
+        Item item = new Item(text);
+        var response = await Client.IndexDocumentAsync(item);
         return response.IsValid ? 0 : 1;
     }
 
